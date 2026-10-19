@@ -1,0 +1,31 @@
+# Release pipeline: `git tag vX.Y.Z && git push --tags` triggers .github/workflows/release.yml.
+version: 2
+project_name: azd
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: azd
+    main: ./cmd/azd
+    binary: azd
+    env: [CGO_ENABLED=0]
+    goos: [linux, darwin]
+    goarch: [amd64, arm64]
+    flags: [-trimpath]
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
+
+archives:
+  - formats: [tar.gz]
+    name_template: "azd_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files: [LICENSE, README.md]
+
+checksum:
+  name_template: checksums.txt
+
+changelog:
+  sort: asc
+  filters:
+    exclude: ["^docs:", "^test:", "^chore:"]

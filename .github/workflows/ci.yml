@@ -1,0 +1,16 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Same Docker-based toolchain as local development.
+      - run: make vet
+      - run: make test
+      - run: make cross
+      - run: sh -n install.sh
