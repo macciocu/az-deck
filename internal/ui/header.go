@@ -26,13 +26,15 @@ func newHeader(a *App) *Header {
 		app:  a,
 		info: tview.NewTextView().SetDynamicColors(true),
 		menu: tview.NewTextView().SetDynamicColors(true),
-		logo: tview.NewTextView().SetDynamicColors(true),
+		logo: tview.NewTextView().SetDynamicColors(true).SetWrap(false),
 	}
-	h.AddItem(h.info, 48, 0, false).AddItem(h.menu, 0, 1, false).AddItem(h.logo, 12, 0, false)
 	var b strings.Builder
+	width := 0
 	for _, l := range logo {
+		width = max(width, tview.TaggedStringWidth(l))
 		fmt.Fprintf(&b, "[%s::b]%s\n", colorLogo, tview.Escape(l))
 	}
+	h.AddItem(h.info, 48, 0, false).AddItem(h.menu, 0, 1, false).AddItem(h.logo, width+1, 0, false)
 	h.logo.SetText(b.String())
 	return h
 }
